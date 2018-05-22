@@ -1,0 +1,82 @@
+<!-- DOCTYPE part  PUBLIC "-//OASIS//DTD DocBook V3.1//EN" -->
+
+<!-- {{{ Banner                                                      -->
+
+<!-- =============================================================== -->
+<!--                                                                 -->
+<!--     frdm_k64f.sgml                                              -->
+<!--                                                                 -->
+<!--     FRDM-K64F board documentation.                              -->
+<!--                                                                 -->
+<!-- =============================================================== -->
+<!-- ####ECOSDOCCOPYRIGHTBEGIN####                                   -->
+<!-- =============================================================== -->
+<!-- Copyright (C) 2012 Free Software Foundation, Inc. -->
+<!-- This material may be distributed only subject to the terms      -->
+<!-- and conditions set forth in the Open Publication License, v1.0  -->
+<!-- or later (the latest version is presently available at          -->
+<!-- http://www.opencontent.org/openpub/)                            -->
+<!-- Distribution of the work or derivative of the work in any       -->
+<!-- standard (paper) book form is prohibited unless prior           -->
+<!-- permission obtained from the copyright holder                   -->
+<!-- =============================================================== -->
+<!-- ####ECOSDOCCOPYRIGHTEND####                                     -->
+<!-- =============================================================== -->
+<!-- #####DESCRIPTIONBEGIN####                                       -->
+<!--                                                                 -->
+<!-- Author(s):   Jernej Turnsek                                     -->
+<!-- Contrib(s):                                                     -->
+<!-- Contact(s):                                                     -->
+<!-- Date:        2018/05/22                                         -->
+<!-- Version:     0.01                                               -->
+<!--                                                                 -->
+<!-- ####DESCRIPTIONEND####                                          -->
+<!-- =============================================================== -->
+
+<!-- }}} -->
+
+<!--<part id="hal-cortexm-kinetis"><title>Freescale Kinetis Family Support</title>-->
+
+<refentry id="kinetis-frdm-k64f">
+  <refmeta>
+    <refentrytitle>FRDM-K64F Development kit</refentrytitle>
+  </refmeta>
+  <refnamediv>
+    <refname>CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F</refname>
+    <refpurpose>eCos Support for Freescale FRDM-K64F development kit</refpurpose>
+  </refnamediv>
+  
+  <refsect1 id="kinetis-frdm-k64f-description"><title>Description</title>
+    <para>
+    The Freescale FRDM-K64F is a development kit for <link linkend="hal-cortexm-kinetis-var">
+    Freescale Kinetis</link> Cortex-M4 based micro-controllers. It covers the K64
+    microcontroller subfamily. K64FN1M0 is a high end member comprising on-chip 1 MiB FLASH
+    and 256 KiB SRAM memory as well as a 16 KiB unified cache.
+    K64 parts are equipped with a rich set of communication interfaces including Ethernet USB, UARTs
+    CAN, SPI and I2C. They also have a Graphics controller and a DMA controller, as well as FlexBus and SDRAM
+    external memory interfaces. They are mixed signal devices featuring a 16 bit ADC and a 12 bit DAC. 
+    </para>
+  </refsect1>
+  <refsect1 id="kinetis-frdm-k64f-config"><title>Configuration</title>
+    <refsect2 id="kinetis-frdm-k64f-config-hardware"><title>Hardware Setup</title>
+      <refsect3 id="kinetis-frdm-k64f-config-hardware-cpu"><title>FRDM-K64F setup</title>
+      <para>
+      </para>
+      </refsect3>
+    </refsect2>
+    <refsect2 id="kinetis-frdm-k64f-config-ecos"><title>eCos Configuration</title>
+      <refsect3 id="frdm-k64f-clocking"><title>Clocking</title>
+      <para>
+      The FRDM-K64F package defines requirements for the platform clocking.
+      </para>
+      </refsect3>  
+      <refsect3 id="frdm-k64f-memory"><title>Memory</title>
+      <para>
+      The K64 has two 128 KiB SRAM banks giving a total of 256KiB on chip SRAM.
+      </para>
+      </refsect3>
+    </refsect2>
+  </refsect1>
+</refentry>
+
+<!--</part>-->
