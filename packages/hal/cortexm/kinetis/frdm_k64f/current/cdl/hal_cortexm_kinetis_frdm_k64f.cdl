@@ -98,14 +98,13 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
     requires      { is_active(CYGPKG_DEVS_ETH_PHY) implies
         (1 == CYGHWR_DEVS_ETH_PHY_KSZ8081) }
     requires      { is_active(CYGPKG_HAL_FREESCALE_EDMA) implies
-        (CYGNUM_HAL_FREESCALE_EDMA_CHAN_NUM == 32) }
+        (CYGNUM_HAL_FREESCALE_EDMA_CHAN_NUM == 16) }
 
     define_proc {
         puts $::cdl_system_header "#define CYGBLD_HAL_PLATFORM_H <pkgconf/hal_cortexm_kinetis_frdm_k64f.h>"
         puts $::cdl_header "#define HAL_PLATFORM_CPU    \"Cortex-M4\""
         puts $::cdl_header "#define HAL_PLATFORM_BOARD  \"Freescale FRDM-K64F\""
         puts $::cdl_header "#define HAL_PLATFORM_EXTRA  \"\""
-        puts $::cdl_system_header "#define CYGPRI_KERNEL_TESTS_DHRYSTONE_PASSES 4000000"
     }
 
     cdl_component CYG_HAL_STARTUP_ENV {

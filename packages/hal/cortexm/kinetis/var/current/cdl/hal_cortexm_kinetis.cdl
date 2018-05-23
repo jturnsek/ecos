@@ -501,8 +501,8 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS {
             display "Kinetis on chip SRAM size \[KiB\]"
             flavor data
             calculated {
-                (CYGHWR_HAL_CORTEXM_KINETIS_FLASH_KIB == 1024 ||
-                 CYGHWR_HAL_CORTEXM_KINETIS_FLASH_KIB == 512)   ? 128 :
+                (CYGHWR_HAL_CORTEXM_KINETIS_FLASH_KIB == 1024)  ? 256 :
+                (CYGHWR_HAL_CORTEXM_KINETIS_FLASH_KIB == 512)   ? 128 :
                 (CYGHWR_HAL_CORTEXM_KINETIS_FLASH_KIB == 256)   ? 64 :
                 (CYGHWR_HAL_CORTEXM_KINETIS_FLASH_KIB == 128)   ? 32 :
                 (CYGHWR_HAL_CORTEXM_KINETIS_FLASH_KIB == 96 ||
@@ -545,7 +545,10 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS {
         cdl_option CYGHWR_HAL_KINETIS_SRAM_BANK_SIZE {
             display "Kinetis onchip RAM bank size"
             flavor  data
-            calculated { CYGHWR_HAL_KINETIS_SRAM_SIZE/2 }
+            calculated { 
+                (CYGHWR_HAL_CORTEXM_KINETIS_FLASH_KIB == 1024) ? CYGHWR_HAL_KINETIS_SRAM_SIZE/4 : 
+                CYGHWR_HAL_KINETIS_SRAM_SIZE/2
+            }
         }
 
         cdl_option CYGHWR_HAL_KINETIS_FLEXNVM_FLASH_SIZE {
