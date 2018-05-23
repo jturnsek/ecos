@@ -69,7 +69,7 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
     implements    CYGINT_HAL_CACHE
 
     requires      { CYGHWR_HAL_CORTEXM_KINETIS_FPU_DEFAULT == "F" }
-    requires      { CYGHWR_HAL_CORTEXM_KINETIS_SUBFAM_DEFAULT == 60 }
+    requires      { CYGHWR_HAL_CORTEXM_KINETIS_SUBFAM_DEFAULT == 64 }
     requires      { CYGHWR_HAL_CORTEXM_KINETIS_SUBFAM != 30 }
     requires      { CYGHWR_HAL_CORTEXM_KINETIS_SUBFAM != 40 }
     requires      { CYGHWR_HAL_CORTEXM_KINETIS_SUBFAM != 50 }
@@ -81,10 +81,10 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
     requires      { is_active(CYGPKG_DEVS_FLASH_KINETIS) implies
                     CYGNUM_DEVS_KINETIS_FLASH_LONGWORD_SIZE == 8 }
 
-    implements    CYGINT_IO_SERIAL_FREESCALE_UART5
+    implements    CYGINT_IO_SERIAL_FREESCALE_UART0
     implements    CYGINT_IO_FREESCALE_I2C0
 
-    implements    CYGINT_HAL_FREESCALE_UART5
+    implements    CYGINT_HAL_FREESCALE_UART0
     implements    CYGINT_HAL_CORTEXM_KINETIS_RTC
 
     implements    CYGINT_HAL_CORTEXM_KINETIS_HAS_PLL1
@@ -253,17 +253,6 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
             divided by ENET according to setting of ENET MSCR register in order to
             provide frequency within 2.5 MHz range."
      }
-
-    cdl_option CYGHWR_HAL_FREESCALE_ENET_E0_1588_PORT {
-        display "IEEE 1588 Port"
-        active_if CYGSEM_DEVS_ETH_FREESCALE_ENET_1588
-        parent CYGSEM_DEVS_ETH_FREESCALE_ENET_1588
-        flavor data
-        default_value { "B" }
-        legal_values { "B" "C" "User" }
-        description "
-            Digital I/O provided by HAL for ENET IEEE 1588 timers."
-    }
 
     cdl_component CYGHWR_DEVS_DISK_MMC_FREESCALE_DSPI_BUS {
         display "MMC Disk SPI bus"
