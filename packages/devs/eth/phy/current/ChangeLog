@@ -1,3 +1,7 @@
+2011-07-02  Ilija Kocho  <ilijak@siva.com.mk>
+
+	* src/KSZ8081.c: New PHY KSZ8081.
+
 2011-07-22  Christophe Coutand  <ecos@hotmail.co.uk>  and sergeig
 
 	* cdl/phy_eth_drivers.cdl: Use CYGHWR_DEVS_ETH_PHY_DP8384X name
