@@ -130,14 +130,6 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
         default_value 120000000
     }
 
-    cdl_option CYGNUM_HAL_CORTEXM_KINETIS_PLF_AUX_FREQ_SP {
-        display "Platform suggested auxiliary frequency setpoint"
-        flavor data
-        no_define
-        legal_values 96000000 100000000 120000000 150000000 200000000
-        default_value 120000000
-    }
-
     cdl_option CYGHWR_HAL_CORTEXM_KINETIS_PLF_XTAL_OR_OSC_FREQ {
         display "Platgorm XTAL/OSC Frequency"
         flavor data
