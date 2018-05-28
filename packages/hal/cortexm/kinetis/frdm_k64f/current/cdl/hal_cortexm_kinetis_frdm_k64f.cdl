@@ -86,14 +86,11 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
 
     implements    CYGINT_HAL_FREESCALE_UART0
     implements    CYGINT_HAL_CORTEXM_KINETIS_RTC
-
-    implements    CYGINT_HAL_CORTEXM_KINETIS_HAS_PLL1
-    implements    CYGINT_HAL_CORTEXM_KINETIS_HAS_OSC1
     implements    CYGINT_HAL_CORTEXM_KINETIS_150
 
     requires { CYGHWR_HAL_CORTEXM_KINETIS_CLK_PER_MAX == 60000000 }
-    requires { CYGHWR_HAL_CORTEXM_KINETIS_CLK_FLEX_BUS_MAX == 50000000 }
-    requires { CYGHWR_HAL_CORTEXM_KINETIS_CLK_FLASH_MAX == 25000000 }
+    requires { CYGHWR_HAL_CORTEXM_KINETIS_CLK_FLEX_BUS_MAX == 40000000 }
+    requires { CYGHWR_HAL_CORTEXM_KINETIS_CLK_FLASH_MAX == 24000000 }
 
     requires      { is_active(CYGPKG_DEVS_ETH_PHY) implies
         (1 == CYGHWR_DEVS_ETH_PHY_KSZ8081) }
@@ -151,16 +148,6 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
         legal_values { 12000000 50000000 }
     }
 
-    cdl_option CYGHWR_HAL_CORTEXM_KINETIS_PLF_XTAL_OR_OSC1_FREQ {
-        display "Platform XTAL1/OSC1 Frequency"
-        flavor data
-        parent CYGOPT_HAL_CORTEXM_KINETIS_MCG_REF_EXT
-        active_if { CYGOPT_HAL_CORTEXM_KINETIS_MCG_REF_EXT1_IS == "OSC" ||
-                   CYGOPT_HAL_CORTEXM_KINETIS_MCG_REF_EXT1_IS == "XTAL" }
-        default_value 50000000
-        legal_values { 12000000 50000000 }
-    }
-
     cdl_option CYGHWR_HAL_CORTEXM_KINETIS_PLF_OSC_CAP {
         display "Platform requred XTAL || C \[pF\]"
         flavor bool
@@ -168,15 +155,6 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
         parent CYGOPT_HAL_CORTEXM_KINETIS_MCG_REF_EXT
         active_if { CYGOPT_HAL_CORTEXM_KINETIS_MCG_REF_EXT_IS == "XTAL" }
         requires { CYGHWR_HAL_CORTEXM_KINETIS_OSC_CAP == 20 }
-    }
-
-    cdl_option CYGHWR_HAL_CORTEXM_KINETIS_PLF_OSC1_CAP {
-        display "Platform requred XTAL1 || C \[pF\]"
-        flavor bool
-        default_value { CYGOPT_HAL_CORTEXM_KINETIS_MCG_REF_EXT1_IS == "XTAL" }
-        parent CYGOPT_HAL_CORTEXM_KINETIS_MCG_REF_EXT
-        active_if { CYGOPT_HAL_CORTEXM_KINETIS_MCG_REF_EXT1_IS == "XTAL" }
-        requires { CYGHWR_HAL_CORTEXM_KINETIS_OSC1_CAP == 20 }
     }
 
     cdl_option CYGHWR_HAL_CORTEXM_KINETIS_PLF_RTC {
