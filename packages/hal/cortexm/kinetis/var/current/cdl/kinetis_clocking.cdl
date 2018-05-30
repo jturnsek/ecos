@@ -102,7 +102,6 @@
         cdl_component CYGOPT_HAL_CORTEXM_KINETIS_MCG_REF_EXT {
             display "EXT_REFCLK source clock settings"
             flavor none
-            no_define
             active_if {
                 (CYGOPT_HAL_CORTEXM_KINETIS_MCG_MCGOUTCLK == "EXT_REFCLK") ||
                 (CYGOPT_HAL_CORTEXM_KINETIS_MCG_FLL_PLL_REFSRC == "EXT_REFCLK")
