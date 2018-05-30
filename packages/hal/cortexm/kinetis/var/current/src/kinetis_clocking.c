@@ -138,7 +138,8 @@ hal_start_pll0(cyghwr_hal_kinetis_mcg_t *mcg_p)
           ;
 # if CYGINT_HAL_CORTEXM_KINETIS_150
     mcg_p->c6 = CYGHWR_HAL_KINETIS_MCG_C6_VDIV(
-          CYGOPT_HAL_CORTEXM_KINETIS_MCGOUT_PLL_VDIV-16);
+          CYGOPT_HAL_CORTEXM_KINETIS_MCGOUT_PLL_VDIV-24); //jturnsek
+          //CYGOPT_HAL_CORTEXM_KINETIS_MCGOUT_PLL_VDIV-16);
 # else
     mcg_p->c6 = CYGHWR_HAL_KINETIS_MCG_C6_VDIV(
           CYGOPT_HAL_CORTEXM_KINETIS_MCGOUT_PLL_VDIV-24);
@@ -334,7 +335,8 @@ hal_get_cpu_clock(void)
 # if CYGINT_HAL_CORTEXM_KINETIS_150
     freq = CYGNUM_HAL_CORTEXM_KINETIS_MCG_FLL_PLL_REF_FREQ /
           ((mcg_p->c5 & CYGHWR_HAL_KINETIS_MCG_C5_PRDIV_M)+1) *
-          ((mcg_p->c6 & CYGHWR_HAL_KINETIS_MCG_C6_VDIV_M)+16) / 2;
+          ((mcg_p->c6 & CYGHWR_HAL_KINETIS_MCG_C6_VDIV_M)+24); //jturnsek
+          //((mcg_p->c6 & CYGHWR_HAL_KINETIS_MCG_C6_VDIV_M)+16) / 2;
 # else
     freq = CYGNUM_HAL_CORTEXM_KINETIS_MCG_FLL_PLL_REF_FREQ /
           ((mcg_p->c5 & CYGHWR_HAL_KINETIS_MCG_C5_PRDIV_M)+1) *

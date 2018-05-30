@@ -513,13 +513,9 @@
                         display "Phase detector proposed input frequency"
                         no_define
                         flavor data
-                        legal_values 1000000 to 32000000
+                        legal_values 2000000 to 4000000
                         default_value {
-                            (CYGNUM_HAL_CORTEXM_KINETIS_MCG_FLL_PLL_REF_FREQ == 50000000) ?
-                            (!(CYGNUM_HAL_CORTEXM_KINETIS_MCG_FLL_PLL_FREQ_SP % 48000000) ? 50000000/8 : 50000000/5) :
-                            !(CYGNUM_HAL_CORTEXM_KINETIS_MCG_FLL_PLL_FREQ_SP % 30000000) ? 30000000 :
-                            !(CYGNUM_HAL_CORTEXM_KINETIS_MCG_FLL_PLL_FREQ_SP % 4000000) ? 4000000 :
-                            5000000
+                            2500000
                         }
                     }
 
@@ -533,7 +529,7 @@
                     cdl_option CYGOPT_HAL_CORTEXM_KINETIS_150_MCGOUT_PLL_PRDIV {
                         display "PLL External Reference Divider"
                         flavor data
-                        legal_values 1 to 8
+                        legal_values 1 to 25
                         default_value {
                             CYGNUM_HAL_CORTEXM_KINETIS_150_MCGOUT_PLL_INFREQ_X ?
                             (CYGNUM_HAL_CORTEXM_KINETIS_MCG_FLL_PLL_REF_FREQ /
@@ -545,7 +541,7 @@
                         display "Phase detector input frequency"
                         no_define
                         flavor data
-                        legal_values 1000000 to 32000000
+                        legal_values 2000000 to 4000000
                         calculated { CYGOPT_HAL_CORTEXM_KINETIS_150_MCGOUT_PLL_PRDIV ?
                             (CYGNUM_HAL_CORTEXM_KINETIS_MCG_FLL_PLL_REF_FREQ /
                              CYGOPT_HAL_CORTEXM_KINETIS_150_MCGOUT_PLL_PRDIV) : -1
@@ -555,10 +551,10 @@
                     cdl_option CYGOPT_HAL_CORTEXM_KINETIS_150_MCGOUT_PLL_VDIV {
                         display "VCO Divider"
                         flavor data
-                        legal_values 16 to 47
+                        legal_values 24 to 55
                         default_value { CYGNUM_HAL_CORTEXM_KINETIS_150_MCGOUT_PLL_INFREQ ?
                             ((CYGNUM_HAL_CORTEXM_KINETIS_MCG_FLL_PLL_FREQ_SP /
-                             CYGNUM_HAL_CORTEXM_KINETIS_150_MCGOUT_PLL_INFREQ) * 2) : -1
+                             CYGNUM_HAL_CORTEXM_KINETIS_150_MCGOUT_PLL_INFREQ)) : -1
                         }
                     }
 
@@ -568,7 +564,7 @@
                         calculated { CYGOPT_HAL_CORTEXM_KINETIS_150_MCGOUT_PLL_PRDIV ?
                             ((CYGNUM_HAL_CORTEXM_KINETIS_MCG_FLL_PLL_REF_FREQ /
                              CYGOPT_HAL_CORTEXM_KINETIS_150_MCGOUT_PLL_PRDIV *
-                             CYGOPT_HAL_CORTEXM_KINETIS_150_MCGOUT_PLL_VDIV) / 2) : -1
+                             CYGOPT_HAL_CORTEXM_KINETIS_150_MCGOUT_PLL_VDIV)) : -1
                         }
                     }
                 }
