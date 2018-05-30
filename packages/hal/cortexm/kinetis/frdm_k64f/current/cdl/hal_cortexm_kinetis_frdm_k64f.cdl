@@ -192,7 +192,7 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
         display       "Console serial port baud rate"
         flavor        data
         legal_values  9600 19200 38400 57600 115200
-        default_value 38400
+        default_value 115200
         description   "
             This option controls the default baud rate used for the
             console connection.
@@ -204,7 +204,7 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
         display       "GDB serial port baud rate"
         flavor        data
         legal_values  9600 19200 38400 57600 115200
-        default_value 38400
+        default_value 115200
         description   "
             This option controls the default baud rate used for the
             GDB connection.
