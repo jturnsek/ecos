@@ -66,8 +66,6 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
     requires      { is_active(CYGPKG_DEVS_ETH_FREESCALE_ENET)
                   implies CYGOPT_HAL_CORTEXM_KINETIS_MCG_REF_EXT_IS == "OSC" }
 
-    implements    CYGINT_HAL_CACHE
-
     requires      { CYGHWR_HAL_CORTEXM_KINETIS_FPU_DEFAULT == "F" }
     requires      { CYGHWR_HAL_CORTEXM_KINETIS_SUBFAM_DEFAULT == 64 }
     requires      { CYGHWR_HAL_CORTEXM_KINETIS_SUBFAM != 30 }
