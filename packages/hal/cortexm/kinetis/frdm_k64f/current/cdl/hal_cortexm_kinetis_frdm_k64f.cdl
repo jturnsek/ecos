@@ -221,31 +221,6 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
             MII MDC. The input clock, typically provided by HAL, is further
             divided by ENET according to setting of ENET MSCR register in order to
             provide frequency within 2.5 MHz range."
-     }
-
-    cdl_component CYGHWR_DEVS_DISK_MMC_FREESCALE_DSPI_BUS {
-        display "MMC Disk SPI bus"
-        flavor data
-        parent CYGPKG_DEVS_DISK_MMC_FREESCALE_DSPI
-        calculated 1
-
-        requires CYGHWR_DEVS_SPI_FREESCALE_DSPI1 == 1
-        implements CYGINT_DEVS_SPI_FREESCALE_DSPI1
-        implements CYGINT_FREESCALE_DSPI1_HAS_MASS
-        requires  { (is_active(CYGSEM_HAL_DCACHE_STARTUP_MODE)
-                    && CYGINT_DEVS_SPI_DSPI_DMA_USE)
-                    implies CYGSEM_HAL_DCACHE_STARTUP_MODE == "WRITETHRU" }
-
-        cdl_option CYGHWR_DEVS_DISK_MMC_FREESCALE_DSPI_CS {
-            display "Device number (CS)"
-            flavor data
-            legal_values { 0 1 2 3 4 5 }
-            default_value 0
-            implements CYGINT_FREESCALE_DSPI1_CS0
-            implements CYGINT_FREESCALE_DSPI1_CS1
-            implements CYGINT_FREESCALE_DSPI1_CS2
-            implements CYGINT_FREESCALE_DSPI1_CS3
-        }
     }
 
     cdl_component CYGHWR_HAL_DEVS_IRQ_PRIO_SCHEME {
