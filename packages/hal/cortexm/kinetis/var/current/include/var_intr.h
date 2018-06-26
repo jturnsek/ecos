@@ -58,7 +58,7 @@
 #include <cyg/hal/plf_intr.h>
 
 //==========================================================================
-
+#if defined (CYGHWR_HAL_CORTEXM_KINETIS_MK64FN1M0)
 typedef enum {
     CYGNUM_HAL_INTERRUPT_DMA0
         = CYGNUM_HAL_INTERRUPT_EXTERNAL,  // DMA Channel 0 Transfer Complete
@@ -149,6 +149,124 @@ typedef enum {
     CYGNUM_HAL_INTERRUPT_ENET_ERROR       // ENET MAC Error and miscelaneous Int
 } KinetisExtInterrupt_e;
 
+#define CYGNUM_HAL_INTERRUPT_NVIC_MAX (CYGNUM_HAL_INTERRUPT_ENET_ERROR)
+
+#define CYGNUM_HAL_ISR_MIN            0
+#define CYGNUM_HAL_ISR_MAX            CYGNUM_HAL_INTERRUPT_ENET_ERROR
+#define CYGNUM_HAL_ISR_COUNT          (CYGNUM_HAL_ISR_MAX + 1)
+
+#else
+
+typedef enum {
+    CYGNUM_HAL_INTERRUPT_DMA0
+        = CYGNUM_HAL_INTERRUPT_EXTERNAL,  // DMA Channel 0 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA1,            // DMA Channel 1 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA2,            // DMA Channel 2 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA3,            // DMA Channel 3 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA4,            // DMA Channel 4 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA5,            // DMA Channel 5 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA6,            // DMA Channel 6 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA7,            // DMA Channel 7 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA8,            // DMA Channel 8 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA9,            // DMA Channel 9 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA10,           // DMA Channel 10 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA11,           // DMA Channel 11 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA12,           // DMA Channel 12 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA13,           // DMA Channel 13 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA14,           // DMA Channel 14 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA15,           // DMA Channel 15 Transfer Complete
+    CYGNUM_HAL_INTERRUPT_DMA_ERROR,       // DMA Error Int
+    CYGNUM_HAL_INTERRUPT_MCM,             // Normal Int
+    CYGNUM_HAL_INTERRUPT_FTFL,            // FTFL Int
+    CYGNUM_HAL_INTERRUPT_READ_COLLISION,  // Read Collision Int
+    CYGNUM_HAL_INTERRUPT_LVD_LVW,         // Low Volt Detect, Low Volt Warn
+    CYGNUM_HAL_INTERRUPT_LLW,             // Low Leakage Wakeup
+    CYGNUM_HAL_INTERRUPT_WDOG,            // WDOG Int
+    CYGNUM_HAL_INTERRUPT_RNGB,            // RNGB Int
+    CYGNUM_HAL_INTERRUPT_I2C0,            // I2C0 int
+    CYGNUM_HAL_INTERRUPT_I2C1,            // I2C1 int
+    CYGNUM_HAL_INTERRUPT_SPI0,            // SPI0 Int
+    CYGNUM_HAL_INTERRUPT_SPI1,            // SPI1 Int
+    CYGNUM_HAL_INTERRUPT_SPI2,            // SPI2 Int
+    CYGNUM_HAL_INTERRUPT_CAN0_ORED_MESSAGE_BUFFER,// CAN0 OR'd Msg Buffs Int
+    CYGNUM_HAL_INTERRUPT_CAN0_BUS_OFF,    // CAN0 Bus Off Int
+    CYGNUM_HAL_INTERRUPT_CAN0_ERROR,      // CAN0 Error Int
+    CYGNUM_HAL_INTERRUPT_CAN0_TX_WARNING, // CAN0 Tx Warning Int
+    CYGNUM_HAL_INTERRUPT_CAN0_RX_WARNING, // CAN0 Rx Warning Int
+    CYGNUM_HAL_INTERRUPT_CAN0_WAKE_UP,    // CAN0 Wake Up Int
+    CYGNUM_HAL_INTERRUPT_CAN0_IMEU,       // CAN0 Ind. Match El Update (IMEU) Int
+    CYGNUM_HAL_INTERRUPT_CAN0_LOST_RX,    // CAN0 Lost Receive Int
+    CYGNUM_HAL_INTERRUPT_CAN1_ORED_MESSAGE_BUFFER, // CAN1 OR'd Msg Buffs Int
+    CYGNUM_HAL_INTERRUPT_CAN1_BUS_OFF,     // CAN1 Bus Off Int
+    CYGNUM_HAL_INTERRUPT_CAN1_ERROR,      // CAN1 Error Int
+    CYGNUM_HAL_INTERRUPT_CAN1_TX_WARNING, // CAN1 Tx Warning Int
+    CYGNUM_HAL_INTERRUPT_CAN1_RX_WARNING, // CAN1 Rx Warning Int
+    CYGNUM_HAL_INTERRUPT_CAN1_WAKE_UP,    // CAN1 Wake Up Int
+    CYGNUM_HAL_INTERRUPT_CAN1_IMEU,       // CAN1 Ind. Match El Update (IMEU) Int
+    CYGNUM_HAL_INTERRUPT_CAN1_LOST_RX,    // CAN1 Lost Receive Int
+    CYGNUM_HAL_INTERRUPT_UART0_RX_TX,     // UART0 Receive/Transmit int
+    CYGNUM_HAL_INTERRUPT_UART0_ERR,       // UART0 Error int
+    CYGNUM_HAL_INTERRUPT_UART1_RX_TX,     // UART1 Receive/Transmit int
+    CYGNUM_HAL_INTERRUPT_UART1_ERR,       // UART1 Error int
+    CYGNUM_HAL_INTERRUPT_UART2_RX_TX,     // UART2 Receive/Transmit int
+    CYGNUM_HAL_INTERRUPT_UART2_ERR,       // UART2 Error int
+    CYGNUM_HAL_INTERRUPT_UART3_RX_TX,     // UART3 Receive/Transmit int
+    CYGNUM_HAL_INTERRUPT_UART3_ERR,       // UART3 Error int
+    CYGNUM_HAL_INTERRUPT_UART4_RX_TX,     // UART4 Receive/Transmit int
+    CYGNUM_HAL_INTERRUPT_UART4_ERR,       // UART4 Error int
+    CYGNUM_HAL_INTERRUPT_UART5_RX_TX,     // UART5 Receive/Transmit int
+    CYGNUM_HAL_INTERRUPT_UART5_ERR,       // UART5 Error int
+    CYGNUM_HAL_INTERRUPT_ADC0,            // ADC0 int
+    CYGNUM_HAL_INTERRUPT_ADC1,            // ADC1 int
+    CYGNUM_HAL_INTERRUPT_CMP0,            // CMP0 int
+    CYGNUM_HAL_INTERRUPT_CMP1,            // CMP1 int
+    CYGNUM_HAL_INTERRUPT_CMP2,            // CMP2 int
+    CYGNUM_HAL_INTERRUPT_FTM0,            // FTM0 fault, overflow and channels int
+    CYGNUM_HAL_INTERRUPT_FTM1,            // FTM1 fault, overflow and channels int
+    CYGNUM_HAL_INTERRUPT_FTM2,            // FTM2 fault, overflow and channels int
+    CYGNUM_HAL_INTERRUPT_CMT,             // CMT int
+    CYGNUM_HAL_INTERRUPT_RTC_RTC,         // RTC int
+    CYGNUM_HAL_INTERRUPT_RTC_SECONDS,     // RTC seconds interrupt
+    CYGNUM_HAL_INTERRUPT_PIT0,            // PIT timer channel 0 int
+    CYGNUM_HAL_INTERRUPT_PIT1,            // PIT timer channel 1 int
+    CYGNUM_HAL_INTERRUPT_PIT2,            // PIT timer channel 2 int
+    CYGNUM_HAL_INTERRUPT_PIT3,            // PIT timer channel 3 int
+    CYGNUM_HAL_INTERRUPT_PDB0,            // PDB0 Int
+    CYGNUM_HAL_INTERRUPT_USB0,            // USB0 int
+    CYGNUM_HAL_INTERRUPT_USBDCD,          // USBDCD Int
+    CYGNUM_HAL_INTERRUPT_ENET_1588_TIMER, // ENET MAC IEEE 1588 Timer Int
+    CYGNUM_HAL_INTERRUPT_ENET_TRANSMIT,   // ENET MAC Transmit Int
+    CYGNUM_HAL_INTERRUPT_ENET_RECEIVE,    // ENET MAC Receive Int
+    CYGNUM_HAL_INTERRUPT_ENET_ERROR,      // ENET MAC Error and miscelaneous Int
+    CYGNUM_HAL_INTERRUPT_I2S0,            // I2S0 Int
+    CYGNUM_HAL_INTERRUPT_SDHC,            // SDHC Int
+    CYGNUM_HAL_INTERRUPT_DAC0,            // DAC0 int
+    CYGNUM_HAL_INTERRUPT_DAC1,            // DAC1 int
+    CYGNUM_HAL_INTERRUPT_TSI0,            // TSI0 Int
+    CYGNUM_HAL_INTERRUPT_MCG,             // MCG Int
+    CYGNUM_HAL_INTERRUPT_LPTIMER,         // LPTimer int
+    CYGNUM_HAL_INTERRUPT_LCD,             // Segment LCD int
+    CYGNUM_HAL_INTERRUPT_PORTA,           // Port A int
+    CYGNUM_HAL_INTERRUPT_PORTB,           // Port B int
+    CYGNUM_HAL_INTERRUPT_PORTC,           // Port C int
+    CYGNUM_HAL_INTERRUPT_PORTD,           // Port D int
+    CYGNUM_HAL_INTERRUPT_PORTE,           // Port E int
+    CYGNUM_HAL_INTERRUPT_PORTF,           // Port F interrupt
+    CYGNUM_HAL_INTERRUPT_DDR,             // DDR interrupt
+    CYGNUM_HAL_INTERRUPT_SWI,             // Software interrupt
+    CYGNUM_HAL_INTERRUPT_NFC,             // NAND flash controller interrupt
+    CYGNUM_HAL_INTERRUPT_USBHS,           // USB high speed OTG interrupt
+    CYGNUM_HAL_INTERRUPT_GLCD,            // Graphical LCD interrupt
+    CYGNUM_HAL_INTERRUPT_CMP3,            // CMP3 interrupt
+    CYGNUM_HAL_INTERRUPT_TAMPER,          // Tamper detect interrupt
+    CYGNUM_HAL_INTERRUPT_Reserved116,     // Reserved interrupt 116
+    CYGNUM_HAL_INTERRUPT_FTM3,            // FTM3 fault, overflow and channels interrupt
+    CYGNUM_HAL_INTERRUPT_ADC2,            // ADC2 interrupt
+    CYGNUM_HAL_INTERRUPT_ADC3,            // ADC3 interrupt
+    CYGNUM_HAL_INTERRUPT_I2S1_TX,         // I2S1 transmit interrupt
+    CYGNUM_HAL_INTERRUPT_I2S1_RX          // I2S1 receive interrupt
+} KinetisExtInterrupt_e;
+
 // DMA16..31 share interrupt vectors with DMA0..15 respectively.
 
 #define    CYGNUM_HAL_INTERRUPT_DMA16  CYGNUM_HAL_INTERRUPT_DMA0
@@ -168,11 +286,13 @@ typedef enum {
 #define    CYGNUM_HAL_INTERRUPT_DMA30  CYGNUM_HAL_INTERRUPT_DMA14
 #define    CYGNUM_HAL_INTERRUPT_DMA31  CYGNUM_HAL_INTERRUPT_DMA15
 
-#define CYGNUM_HAL_INTERRUPT_NVIC_MAX (CYGNUM_HAL_INTERRUPT_ENET_ERROR)
+#define CYGNUM_HAL_INTERRUPT_NVIC_MAX (CYGNUM_HAL_INTERRUPT_I2S1_RX)
 
 #define CYGNUM_HAL_ISR_MIN            0
-#define CYGNUM_HAL_ISR_MAX            CYGNUM_HAL_INTERRUPT_ENET_ERROR
+#define CYGNUM_HAL_ISR_MAX            CYGNUM_HAL_INTERRUPT_I2S1_RX
 #define CYGNUM_HAL_ISR_COUNT          (CYGNUM_HAL_ISR_MAX + 1)
+
+#endif
 
 #define CYGNUM_HAL_VSR_MIN            0
 #ifndef CYGNUM_HAL_VSR_MAX
