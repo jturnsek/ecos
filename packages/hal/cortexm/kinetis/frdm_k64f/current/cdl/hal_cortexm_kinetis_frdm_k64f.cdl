@@ -223,6 +223,29 @@ cdl_package CYGPKG_HAL_CORTEXM_KINETIS_FRDM_K64F {
             provide frequency within 2.5 MHz range."
     }
 
+    cdl_option CYGNUM_DEVS_FLASH_SPI_MX25LXX_DEV0_MAP_ADDR {
+        display "MX25LXX Flash Mapping Address"
+        flavor data
+        parent CYGHWR_DEVS_FLASH_SPI_MX25LXX_DEV0
+        default_value 0xD0000000
+    }
+    cdl_component CYGHWR_DEVS_FLASH_MX25LXX_DEV0_SPI_BUS {
+        display "MX25Lxx SPI bus"
+        flavor data
+        parent CYGHWR_DEVS_FLASH_SPI_MX25LXX_DEV0
+        calculated 0
+
+        requires CYGHWR_DEVS_SPI_FREESCALE_DSPI0 == 1
+        implements CYGINT_DEVS_SPI_FREESCALE_DSPI0
+
+        cdl_option CYGHWR_DEVS_FLASH_MX25LXX_DEV0_SPI_CS {
+            display "Device number (CS)"
+            flavor data
+            calculated 0
+            implements CYGINT_FREESCALE_DSPI0_CS0
+        }
+    }
+
     cdl_component CYGHWR_HAL_DEVS_IRQ_PRIO_SCHEME {
         display "Interrupt priority scheme"
         flavor none
