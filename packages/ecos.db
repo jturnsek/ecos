@@ -274,6 +274,15 @@ package CYGPKG_DEVS_FLASH_SPI_M25PXX {
         Support for M25Pxx SPI flash devices."
 }
 
+package CYGPKG_DEVS_FLASH_SPI_MX25LXX {
+        alias           { "MX25Lxx SPI Flash" flash_spi_mx25lxx }
+        directory       devs/flash/spi/mx25lxx
+        script          flash_mx25lxx.cdl
+        hardware
+        description "
+        Support for MX25Lxx SPI flash devices."
+}
+
 package CYGPKG_DEVS_FLASH_SPI_SST25XX {
         alias           { "SST25xx SPI Flash" flash_spi_sst25xx }
         directory       devs/flash/spi/sst25xx
@@ -282,6 +291,16 @@ package CYGPKG_DEVS_FLASH_SPI_SST25XX {
         description "
         Support for SST25xx SPI flash devices from Silicon Storage
         Technology."
+}
+
+package CYGPKG_DEVS_FLASH_MX25LXX_FREESCALE_DSPI {
+    alias         { "MX25LXX FLASH over Freescale DSPI" }
+
+    directory     devs/flash/freescale/dspi/mx25lxx
+    script        flash_mx25lxx_freescale_dspi.cdl
+    description   "
+        This package provides a driver for MX25LXX serial FLASH
+        attached to a Freescale DSPI interfaces."
 }
 
 package CYGPKG_DEVS_FLASH_SST25XX_FREESCALE_DSPI {
