@@ -7663,9 +7663,8 @@ target freescale_frdm_k64f {
                    CYGPKG_DEVS_SPI_FREESCALE_DSPI
                    CYGPKG_IO_I2C
                    CYGPKG_DEVS_I2C_FREESCALE_I2C
-                   CYGPKG_DEVS_DISK_MMC
-                   CYGPKG_DEVS_DISK_MMC_FREESCALE_DSPI
-                   CYGPKG_DEVS_FLASH_KINETIS
+                   CYGPKG_DEVS_FLASH_SPI_MX25LXX
+                   CYGPKG_DEVS_FLASH_MX25LXX_FREESCALE_DSPI
                  }
         description "The freescale_frdm_k64f target provides the packages needed
         to run eCos on the Freescale FRDM-k64f development system."
