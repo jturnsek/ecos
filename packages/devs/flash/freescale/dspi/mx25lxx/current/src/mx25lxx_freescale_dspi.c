@@ -72,7 +72,7 @@
 
 // Underlaying Freescale DSPI device
 CYG_DEVS_SPI_FREESCALE_DSPI_DEVICE(
-    mx25lxx_spi_dev0,                         // Device name
+    mx25lxx_spi_dev0,                        // Device name
     CYGHWR_DEVS_FLASH_MX25LXX_DEV0_SPI_BUS,  // SPI bus
     CYGHWR_DEVS_FLASH_MX25LXX_DEV0_SPI_CS,   // Dev num (CS)
     MX25LXX_SPI_FRAME_SIZE,                  // Frame size
@@ -87,7 +87,7 @@ CYG_DEVS_SPI_FREESCALE_DSPI_DEVICE(
 );
 
 //-----------------------------------------------------------------------------
-// Instantiate the SST25xx device driver.
+// Instantiate the MX25Lxx device driver.
 
 CYG_DEVS_FLASH_SPI_MX25LXX_DRIVER(mx25lxx_flash_dev0,
                                   CYGNUM_DEVS_FLASH_SPI_MX25LXX_DEV0_MAP_ADDR,
