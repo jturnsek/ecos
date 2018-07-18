@@ -60,8 +60,8 @@ cdl_package CYGPKG_DEVS_FLASH_MX25LXX_FREESCALE_DSPI {
         requires CYGPKG_DEVS_SPI_FREESCALE_DSPI
         implements CYGHWR_DEVS_FLASH_SPI_MX25LXX_DEVICE
         
-        requires CYGHWR_DEVS_FLASH_MX25LXX_DEV0_SPI_BUS
-        requires CYGHWR_DEVS_FLASH_MX25LXX_DEV0_SPI_CS
+        #requires CYGHWR_DEVS_FLASH_MX25LXX_DEV0_SPI_BUS
+        #requires CYGHWR_DEVS_FLASH_MX25LXX_DEV0_SPI_CS
         requires CYGNUM_DEVS_FLASH_SPI_MX25LXX_DEV0_MAP_ADDR
         
         compile -library=libextras.a mx25lxx_freescale_dspi.c
