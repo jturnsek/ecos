@@ -3059,10 +3059,43 @@ btree_compact_tree(struct btree *bt, pgno_t pgno, struct btree *btc)
 	return pgno;
 }
 
+static int mkstemp (char *template_name)
+{
+    int i, j, fd, len, index;
+
+    /* These are the (62) characters used in temporary filenames. */
+    static const char letters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    /* The last six characters of template must be "XXXXXX" */
+    if (template_name == NULL || (len = strlen (template_name)) < 6
+            || memcmp (template_name + (len - 6), "XXXXXX", 6)) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    /* User may supply more than six trailing Xs */
+    for (index = len - 6; index > 0 && template_name[index - 1] == 'X'; index--);
+
+    /*
+        Like OpenBSD, mkstemp() will try at least 2 ** 31 combinations before
+        giving up.
+     */
+    for (i = 0; i >= 0; i++) {
+        for(j = index; j < len; j++) {
+            template_name[j] = letters[rand () % 62];
+        }
+        fd = open(template_name, O_RDWR | O_CREAT | O_EXCL, 0600);
+        if (fd != -1) return fd;
+        if (fd == -1 && errno != EEXIST) return -1;
+    }
+
+    return -1;
+}
+
 int
 btree_compact(struct btree *bt)
 {
-	char			*compact_path = NULL;
+	char 				compact_path[256];
 	struct btree		*btc;
 	struct btree_txn	*txn, *txnc = NULL;
 	int			 fd;
@@ -3080,13 +3113,12 @@ btree_compact(struct btree *bt)
 	if ((txn = btree_txn_begin(bt, 0)) == NULL)
 		return BT_FAIL;
 
-	if (asprintf(&compact_path, "%s.compact.XXXXXX", bt->path) == -1) {
+	if (sprintf(compact_path, "%s.compact.XXXXXX", bt->path) == -1) {
 		btree_txn_abort(txn);
 		return BT_FAIL;
 	}
 	fd = mkstemp(compact_path);
 	if (fd == -1) {
-		free(compact_path);
 		btree_txn_abort(txn);
 		return BT_FAIL;
 	}
@@ -3121,7 +3153,6 @@ btree_compact(struct btree *bt)
 
 	btree_txn_abort(txn);
 	btree_txn_abort(txnc);
-	free(compact_path);
 	btree_close(btc);
 	mpage_prune(bt);
 	return 0;
@@ -3130,7 +3161,6 @@ failed:
 	btree_txn_abort(txn);
 	btree_txn_abort(txnc);
 	unlink(compact_path);
-	free(compact_path);
 	btree_close(btc);
 	mpage_prune(bt);
 	return BT_FAIL;
