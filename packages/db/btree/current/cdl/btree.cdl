@@ -48,8 +48,7 @@
 
 cdl_package CYGPKG_BTREE_LIB {
     display         "BTree library"
-    define_header   btree.h
-    include_dir     btree
+    include_dir     cyg/db/btree
 
     requires        CYGPKG_POSIX
     requires        CYGPKG_ISOINFRA
@@ -59,6 +58,36 @@ cdl_package CYGPKG_BTREE_LIB {
     requires        CYGPKG_FS_JFFS2
     
     compile         -library=libextras.a btree.c
+
+    cdl_option CYGDAT_BTREE_LIB_PAGESIZE {
+        display       "Size of the page"
+        flavor        data
+        default_value 512
+        legal_values 512 1024 2048 4096
+
+        description   "
+            This option sets the size of the page."
+    }
+
+    cdl_option CYGDAT_BTREE_LIB_COMMIT_PAGES {
+        display       "Number of commit pages"
+        flavor        data
+        default_value 16
+        legal_values 8 16 32 64
+
+        description   "
+            This option sets the max number of pages to write in one commit."
+    }
+
+    cdl_option CYGDAT_BTREE_LIB_MAXCACHE {
+        display       "Number of max cache pages"
+        flavor        data
+        default_value 16
+        legal_values 8 16 32 64 128 256 512 1024
+
+        description   "
+            This option sets the max number of pages to keep in cache."
+    }
 
 }
 

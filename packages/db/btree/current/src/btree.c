@@ -18,12 +18,9 @@
 
 #include <sys/types.h>
 #include <sys/tree.h>
-#include <sys/stat.h>
-#include <sys/queue.h>
-#include <sys/uio.h>
 
 #include <assert.h>
-#include <err.h>
+#include <cyg/error/codes.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stddef.h>
@@ -33,8 +30,11 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <cyg/io/file.h>
 
-#include "btree.h"
+#include <pkgconf/btree.h>
+#include <cyg/db/btree/sys/queue.h>
+#include <cyg/db/btree/btree.h>
 
 /* #define DEBUG */
 
@@ -46,7 +46,7 @@
 # define DPRINTF(...)
 #endif
 
-#define PAGESIZE	 4096
+#define BT_PAGESIZE	 CYGDAT_BTREE_LIB_PAGESIZE
 #define BT_MINKEYS	 4
 #define BT_MAGIC	 0xB3DBB3DB
 #define BT_VERSION	 4
@@ -114,7 +114,9 @@ struct bt_meta {				/* meta (footer) page content */
 	uint32_t	 revisions;
 	uint32_t	 depth;
 	uint64_t	 entries;
+#if 0 /* jturnsek */
 	unsigned char	 hash[SHA_DIGEST_LENGTH];
+#endif
 } __packed;
 
 struct btkey {
@@ -225,8 +227,8 @@ struct btree {
 #define NODEPGNO(node)	 ((node)->p.np_pgno)
 #define NODEDSZ(node)	 ((node)->p.np_dsize)
 
-#define BT_COMMIT_PAGES	 64	/* max number of pages to write in one commit */
-#define BT_MAXCACHE_DEF	 1024	/* max number of pages to keep in cache  */
+#define BT_COMMIT_PAGES	 CYGDAT_BTREE_LIB_COMMIT_PAGES	/* max number of pages to write in one commit */
+#define BT_MAXCACHE_DEF	 CYGDAT_BTREE_LIB_MAXCACHE	/* max number of pages to keep in cache  */
 
 static int		 btree_read_page(struct btree *bt, pgno_t pgno,
 			    struct page *page);
@@ -608,7 +610,8 @@ btree_read_page(struct btree *bt, pgno_t pgno, struct page *page)
 
 	DPRINTF("reading page %u", pgno);
 	bt->stat.reads++;
-	if ((rc = pread(bt->fd, page, bt->head.psize, (off_t)pgno*bt->head.psize)) == 0) {
+	lseek(bt->fd, (off_t)pgno*bt->head.psize, SEEK_SET);
+	if ((rc = read(bt->fd, page, bt->head.psize)) == 0) {
 		DPRINTF("page %u doesn't exist", pgno);
 		errno = ENOENT;
 		return BT_FAIL;
@@ -642,6 +645,7 @@ struct btree_txn *
 btree_txn_begin(struct btree *bt, int rdonly)
 {
 	struct btree_txn	*txn;
+	struct flock 		lock;
 
 	if (!rdonly && bt->txn != NULL) {
 		DPRINTF("write transaction already begun");
@@ -665,7 +669,8 @@ btree_txn_begin(struct btree *bt, int rdonly)
 		SIMPLEQ_INIT(txn->dirty_queue);
 
 		DPRINTF("taking write lock on txn %p", txn);
-		if (flock(bt->fd, LOCK_EX | LOCK_NB) != 0) {
+		lock.l_type = F_WRLCK;
+		if (fcntl(bt->fd, F_SETLKW, &lock) != 0) {
 			DPRINTF("flock: %s", strerror(errno));
 			errno = EBUSY;
 			free(txn->dirty_queue);
@@ -694,6 +699,7 @@ btree_txn_abort(struct btree_txn *txn)
 {
 	struct mpage	*mp;
 	struct btree	*bt;
+	struct flock	lock;
 
 	if (txn == NULL)
 		return;
@@ -714,7 +720,8 @@ btree_txn_abort(struct btree_txn *txn)
 
 		DPRINTF("releasing write lock on txn %p", txn);
 		txn->bt->txn = NULL;
-		if (flock(txn->bt->fd, LOCK_UN) != 0) {
+		lock.l_type = F_UNLCK;
+		if (fcntl(txn->bt->fd, F_SETLKW, &lock) != 0) {
 			DPRINTF("failed to unlock fd %d: %s",
 			    txn->bt->fd, strerror(errno));
 		}
@@ -836,7 +843,6 @@ done:
 static int
 btree_write_header(struct btree *bt, int fd)
 {
-	struct stat	 sb;
 	struct bt_head	*h;
 	struct page	*p;
 	ssize_t		 rc;
@@ -845,13 +851,7 @@ btree_write_header(struct btree *bt, int fd)
 	DPRINTF("writing header page");
 	assert(bt != NULL);
 
-	/*
-	 * Ask stat for 'optimal blocksize for I/O', but cap to fit in indx_t.
-	 */
-	if (fstat(fd, &sb) == 0)
-		psize = MINIMUM(32*1024, sb.st_blksize);
-	else
-		psize = PAGESIZE;
+	psize = BT_PAGESIZE;
 
 	if ((p = calloc(1, psize)) == NULL)
 		return -1;
@@ -877,7 +877,7 @@ btree_write_header(struct btree *bt, int fd)
 static int
 btree_read_header(struct btree *bt)
 {
-	char		 page[PAGESIZE];
+	char		 page[BT_PAGESIZE];
 	struct page	*p;
 	struct bt_head	*h;
 	int		 rc;
@@ -886,11 +886,11 @@ btree_read_header(struct btree *bt)
 
 	/* We don't know the page size yet, so use a minimum value.
 	 */
-
-	if ((rc = pread(bt->fd, page, PAGESIZE, 0)) == 0) {
+	lseek(bt->fd, 0, SEEK_SET);
+	if ((rc = read(bt->fd, page, BT_PAGESIZE)) == 0) {
 		errno = ENOENT;
 		return -1;
-	} else if (rc != PAGESIZE) {
+	} else if (rc != BT_PAGESIZE) {
 		if (rc > 0)
 			errno = EINVAL;
 		DPRINTF("read: %s", strerror(errno));
@@ -943,7 +943,9 @@ btree_write_meta(struct btree *bt, pgno_t root, unsigned int flags)
 	bt->meta.flags = flags;
 	bt->meta.created_at = time(0);
 	bt->meta.revisions++;
+#if 0 /* jturnsek */
 	SHA1((unsigned char *)&bt->meta, METAHASHLEN, bt->meta.hash);
+#endif
 
 	/* Copy the meta data changes to the new meta page. */
 	meta = METADATA(mp->page);
@@ -972,7 +974,9 @@ static int
 btree_is_meta_page(struct page *p)
 {
 	struct bt_meta	*m;
+#if 0 /* jturnsek */
 	unsigned char	 hash[SHA_DIGEST_LENGTH];
+#endif
 
 	m = METADATA(p);
 	if (!F_ISSET(p->flags, P_META)) {
@@ -986,13 +990,14 @@ btree_is_meta_page(struct page *p)
 		errno = EINVAL;
 		return 0;
 	}
-
+#if 0 /* jturnsek */
 	SHA1((unsigned char *)m, METAHASHLEN, hash);
 	if (bcmp(hash, m->hash, SHA_DIGEST_LENGTH) != 0) {
 		DPRINTF("page %d has an invalid digest", p->pgno);
 		errno = EINVAL;
 		return 0;
 	}
+#endif
 
 	return 1;
 }
@@ -1046,7 +1051,7 @@ btree_read_meta(struct btree *bt, pgno_t *p_next)
 		DPRINTF("size unchanged, keeping current meta page");
 		if (F_ISSET(bt->meta.flags, BT_TOMBSTONE)) {
 			DPRINTF("file is dead");
-			errno = ESTALE;
+			errno = ENOENT;
 			return BT_FAIL;
 		} else
 			return BT_SUCCESS;
@@ -1061,7 +1066,7 @@ btree_read_meta(struct btree *bt, pgno_t *p_next)
 			DPRINTF("flags = 0x%x", meta->flags);
 			if (F_ISSET(meta->flags, BT_TOMBSTONE)) {
 				DPRINTF("file is dead");
-				errno = ESTALE;
+				errno = ENOENT;
 				return BT_FAIL;
 			} else {
 				/* Make copy of last meta page. */

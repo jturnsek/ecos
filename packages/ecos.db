@@ -7921,5 +7921,13 @@ package CYGPKG_IO_SERIAL_ARM_XC7Z {
     description       "Xilinx Zynq serial device drivers"
 }
 
+package CYGPKG_BTREE_LIB {
+    alias           { "BTree library" btree }
+    directory       db/btree
+    script          btree.cdl
+    description "
+        This package provides BTree library key value store."
+}
+
 # ==========================================================================
 # End of ecos.db

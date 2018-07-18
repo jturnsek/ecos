@@ -19,8 +19,6 @@
 #ifndef _btree_h_
 #define _btree_h_
 
-#include <openssl/sha.h>
-
 struct mpage;
 struct cursor;
 struct btree_txn;
