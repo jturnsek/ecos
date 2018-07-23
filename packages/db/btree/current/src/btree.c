@@ -32,7 +32,7 @@
 #include <unistd.h>
 #include <cyg/io/file.h>
 
-#include <pkgconf/btree.h>
+#include <pkgconf/btree_lib.h>
 #include <cyg/db/btree/sys/queue.h>
 #include <cyg/db/btree/btree.h>
 
@@ -114,9 +114,6 @@ struct bt_meta {				/* meta (footer) page content */
 	uint32_t	 revisions;
 	uint32_t	 depth;
 	uint64_t	 entries;
-#if 0 /* jturnsek */
-	unsigned char	 hash[SHA_DIGEST_LENGTH];
-#endif
 } __packed;
 
 struct btkey {
@@ -645,7 +642,6 @@ struct btree_txn *
 btree_txn_begin(struct btree *bt, int rdonly)
 {
 	struct btree_txn	*txn;
-	struct flock 		lock;
 
 	if (!rdonly && bt->txn != NULL) {
 		DPRINTF("write transaction already begun");
@@ -668,15 +664,6 @@ btree_txn_begin(struct btree *bt, int rdonly)
 		}
 		SIMPLEQ_INIT(txn->dirty_queue);
 
-		DPRINTF("taking write lock on txn %p", txn);
-		lock.l_type = F_WRLCK;
-		if (fcntl(bt->fd, F_SETLKW, &lock) != 0) {
-			DPRINTF("flock: %s", strerror(errno));
-			errno = EBUSY;
-			free(txn->dirty_queue);
-			free(txn);
-			return NULL;
-		}
 		bt->txn = txn;
 	}
 
@@ -699,7 +686,6 @@ btree_txn_abort(struct btree_txn *txn)
 {
 	struct mpage	*mp;
 	struct btree	*bt;
-	struct flock	lock;
 
 	if (txn == NULL)
 		return;
@@ -718,13 +704,7 @@ btree_txn_abort(struct btree_txn *txn)
 			mpage_free(mp);
 		}
 
-		DPRINTF("releasing write lock on txn %p", txn);
 		txn->bt->txn = NULL;
-		lock.l_type = F_UNLCK;
-		if (fcntl(txn->bt->fd, F_SETLKW, &lock) != 0) {
-			DPRINTF("failed to unlock fd %d: %s",
-			    txn->bt->fd, strerror(errno));
-		}
 		free(txn->dirty_queue);
 	}
 
@@ -773,12 +753,16 @@ btree_txn_commit(struct btree_txn *txn)
 
 	if (F_ISSET(bt->flags, BT_FIXPADDING)) {
 		size = lseek(bt->fd, 0, SEEK_END);
-		size += bt->head.psize - (size % bt->head.psize);
+		n = bt->head.psize - (size % bt->head.psize);
 		DPRINTF("extending to multiple of page size: %llu", size);
-		if (ftruncate(bt->fd, size) != 0) {
-			DPRINTF("ftruncate: %s", strerror(errno));
-			btree_txn_abort(txn);
-			return BT_FAIL;
+		while (n-- > 0) {
+			uint8_t tmp = 0;
+			rc = write(bt->fd, &tmp, 1);
+			if (rc != 1) {
+				DPRINTF("ftruncate: %s", strerror(errno));
+				btree_txn_abort(txn);
+				return BT_FAIL;	
+			}
 		}
 		bt->flags &= ~BT_FIXPADDING;
 	}
@@ -943,9 +927,6 @@ btree_write_meta(struct btree *bt, pgno_t root, unsigned int flags)
 	bt->meta.flags = flags;
 	bt->meta.created_at = time(0);
 	bt->meta.revisions++;
-#if 0 /* jturnsek */
-	SHA1((unsigned char *)&bt->meta, METAHASHLEN, bt->meta.hash);
-#endif
 
 	/* Copy the meta data changes to the new meta page. */
 	meta = METADATA(mp->page);
@@ -974,9 +955,6 @@ static int
 btree_is_meta_page(struct page *p)
 {
 	struct bt_meta	*m;
-#if 0 /* jturnsek */
-	unsigned char	 hash[SHA_DIGEST_LENGTH];
-#endif
 
 	m = METADATA(p);
 	if (!F_ISSET(p->flags, P_META)) {
@@ -990,14 +968,6 @@ btree_is_meta_page(struct page *p)
 		errno = EINVAL;
 		return 0;
 	}
-#if 0 /* jturnsek */
-	SHA1((unsigned char *)m, METAHASHLEN, hash);
-	if (bcmp(hash, m->hash, SHA_DIGEST_LENGTH) != 0) {
-		DPRINTF("page %d has an invalid digest", p->pgno);
-		errno = EINVAL;
-		return 0;
-	}
-#endif
 
 	return 1;
 }
@@ -1088,11 +1058,6 @@ struct btree *
 btree_open_fd(int fd, unsigned int flags)
 {
 	struct btree	*bt;
-	int		 fl;
-
-	fl = fcntl(fd, F_GETFL);
-	if (fcntl(fd, F_SETFL, fl | O_APPEND) == -1)
-		return NULL;
 
 	if ((bt = calloc(1, sizeof(*bt))) == NULL)
 		return NULL;
@@ -3171,11 +3136,8 @@ failed:
 int
 btree_revert(struct btree *bt)
 {
-	if (btree_read_meta(bt, NULL) != 0)
-		return -1;
-
-	DPRINTF("truncating file at page %u", bt->meta.root);
-	return ftruncate(bt->fd, bt->head.psize * bt->meta.root);
+	//jturnsek: TODO
+	return -1;
 }
 
 void
