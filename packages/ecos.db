@@ -7929,5 +7929,13 @@ package CYGPKG_BTREE_LIB {
         This package provides BTree library key value store."
 }
 
+package CYGPKG_KVDB_LIB {
+    alias           { "KVDB library" kvdb }
+    directory       db/kvdb
+    script          kvdb.cdl
+    description "
+        This package provides KVDB library key value store."
+}
+
 # ==========================================================================
 # End of ecos.db
