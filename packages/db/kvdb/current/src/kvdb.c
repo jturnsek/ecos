@@ -55,14 +55,14 @@ int KVDB_open(
 			return KVDB_ERROR_IO;
 	}
 
-	if (fseeko(db->f, 0, SEEK_END)) {
+	if (fseek(db->f, 0, SEEK_END)) {
 		fclose(db->f);
 		return KVDB_ERROR_IO;
 	}
-	if (ftello(db->f) < KVDB_HEADER_SIZE) {
+	if (ftell(db->f) < KVDB_HEADER_SIZE) {
 		/* write header if not already present */
 		if ((hash_table_size) && (key_size) && (value_size)) {
-			if (fseeko(db->f, 0, SEEK_SET)) { 
+			if (fseek(db->f, 0, SEEK_SET)) { 
 				fclose(db->f); 
 				return KVDB_ERROR_IO; 
 			}
@@ -94,7 +94,7 @@ int KVDB_open(
 		}
 	} 
 	else {
-		if (fseeko(db->f, 0, SEEK_SET)) { 
+		if (fseek(db->f, 0, SEEK_SET)) { 
 			fclose(db->f); 
 			return KVDB_ERROR_IO; 
 		}
@@ -158,7 +158,7 @@ int KVDB_open(
 		memcpy(((uint8_t *)db->hash_tables) + (db->hash_table_size_bytes * db->num_hash_tables), httmp, db->hash_table_size_bytes);
 		++db->num_hash_tables;
 		if (httmp[db->hash_table_size]) {
-			if (fseeko(db->f, httmp[db->hash_table_size], SEEK_SET)) {
+			if (fseek(db->f, httmp[db->hash_table_size], SEEK_SET)) {
 				KVDB_close(db);
 				free(httmp);
 				return KVDB_ERROR_IO;
@@ -195,7 +195,7 @@ int KVDB_get(KVDB *db,const void *key, void *vbuf)
 	for(i = 0; i < db->num_hash_tables; ++i) {
 		offset = cur_hash_table[hash];
 		if (offset) {
-			if (fseeko(db->f, offset, SEEK_SET))
+			if (fseek(db->f, offset, SEEK_SET))
 				return KVDB_ERROR_IO;
 			if (fread(&tmp[0], 1, 1, db->f) != 1) 
 				return KVDB_ERROR_IO;
@@ -251,7 +251,7 @@ static int _kvdb_put(KVDB *db, const void *key, const void *value, bool delete)
 		offset = cur_hash_table[hash];
 		if (offset) {
 			/* rewrite if already exists */
-			if (fseeko(db->f, offset, SEEK_SET))
+			if (fseek(db->f, offset, SEEK_SET))
 				return KVDB_ERROR_IO;
 			kptr = (const uint8_t *)key;
 			klen = db->key_size;
@@ -268,7 +268,7 @@ static int _kvdb_put(KVDB *db, const void *key, const void *value, bool delete)
 			}
 
 			if (delete) {
-				if (fseeko(db->f, offset, SEEK_SET))
+				if (fseek(db->f, offset, SEEK_SET))
 					return KVDB_ERROR_IO;
 				tmp[0] = 0;
 				if (fwrite(&tmp[0], 1, 1, db->f) != 1)
@@ -279,7 +279,7 @@ static int _kvdb_put(KVDB *db, const void *key, const void *value, bool delete)
 			else {
 				if (tmp[0] == 0) {
 					/* deleted entry found */
-					if (fseeko(db->f, offset, SEEK_SET))
+					if (fseek(db->f, offset, SEEK_SET))
 						return KVDB_ERROR_IO;
 					tmp[0] = 1;
 					if (fwrite(&tmp[0], 1, 1, db->f) != 1)
@@ -289,7 +289,7 @@ static int _kvdb_put(KVDB *db, const void *key, const void *value, bool delete)
 				}
 				else {
 					/* C99 spec demands seek after fread(), required for Windows */
-					fseeko(db->f, 0, SEEK_CUR);
+					fseek(db->f, 0, SEEK_CUR);
 				}
 				if (fwrite(value, db->value_size, 1, db->f) == 1) {
 					fflush(db->f);
@@ -305,9 +305,9 @@ static int _kvdb_put(KVDB *db, const void *key, const void *value, bool delete)
 				return KVDB_ERROR_IO;	
 			}
 			/* add if an empty hash table slot is discovered */
-			if (fseeko(db->f, 0, SEEK_END))
+			if (fseek(db->f, 0, SEEK_END))
 				return KVDB_ERROR_IO;
-			endoffset = ftello(db->f);
+			endoffset = ftell(db->f);
 			
 			tmp[0] = 1;
 			if (fwrite(&tmp[0], 1, 1, db->f) != 1)
@@ -317,7 +317,7 @@ static int _kvdb_put(KVDB *db, const void *key, const void *value, bool delete)
 			if (fwrite(value, db->value_size, 1, db->f) != 1)
 				return KVDB_ERROR_IO;
 
-			if (fseeko(db->f, htoffset + (sizeof(uint64_t) * hash), SEEK_SET))
+			if (fseek(db->f, htoffset + (sizeof(uint64_t) * hash), SEEK_SET))
 				return KVDB_ERROR_IO;
 			if (fwrite(&endoffset, sizeof(uint64_t), 1, db->f) != 1)
 				return KVDB_ERROR_IO;
@@ -337,9 +337,9 @@ put_no_match_next_hash_table:
 		return KVDB_ERROR_IO;	
 	}
 	/* if no existing slots, add a new page of hash table entries */
-	if (fseeko(db->f, 0, SEEK_END))
+	if (fseek(db->f, 0, SEEK_END))
 		return KVDB_ERROR_IO;
-	endoffset = ftello(db->f);
+	endoffset = ftell(db->f);
 
 	hash_tables_rea = realloc(db->hash_tables, db->hash_table_size_bytes * (db->num_hash_tables + 1));
 	if (!hash_tables_rea)
@@ -362,7 +362,7 @@ put_no_match_next_hash_table:
 		return KVDB_ERROR_IO;
 
 	if (db->num_hash_tables) {
-		if (fseeko(db->f, lasthtoffset + (sizeof(uint64_t) * db->hash_table_size), SEEK_SET))
+		if (fseek(db->f, lasthtoffset + (sizeof(uint64_t) * db->hash_table_size), SEEK_SET))
 			return KVDB_ERROR_IO;
 		if (fwrite(&endoffset, sizeof(uint64_t), 1, db->f) != 1)
 			return KVDB_ERROR_IO;
@@ -406,7 +406,7 @@ int KVDB_iterator_next(KVDB_ITERATOR *dbi, void *kbuf, void *vbuf)
 						return 0;
 				}
 			}
-			if (fseeko(dbi->db->f, offset, SEEK_SET))
+			if (fseek(dbi->db->f, offset, SEEK_SET))
 				return KVDB_ERROR_IO;
 			if (fread(&tmp, 1, 1, dbi->db->f) != 1)
 				return KVDB_ERROR_IO;
